@@ -63,6 +63,11 @@ Which mode to use:
 - Auto masking — `Authorization` / `Cookie` / `*-token` / query tokens are hidden on display and in exports
 - Convert — cURL (multiline, multipart/form) · HTTPie · Postman Collection. An optional placeholder mode swaps credentials for `$AUTH_TOKEN` / `{{AUTH_TOKEN}}` variables, so a shared command stays runnable (the recipient fills in their own value) without exposing the real token.
 - Diff — compare two requests (status / query / headers / body)
+- Edit & resend — in the DevTools panel, edit a captured request (method/URL/headers/body), substitute `{{variables}}`, and resend it through the inspected page's own session (no extra permissions, no CORS issues); the response is compared against the original
+- Variables — define `{{KEY}}` values once and reuse them when resending
+- Tools — built-in encoder/decoder (Base64 / URL / Hex / JWT) and hashes (MD5 / SHA-1 / SHA-256), plus a regex scan across all captured response bodies (e.g., to surface `flag{...}`)
+- Response search — regex highlight within a response body
+- Fuzz — Intruder-style: mark a spot with `§...§`, supply a payload list, and replay through the page session; results table flags length/status outliers (for authorized wargames/CTF only)
 - Export / Import — round-trips both ways. Export to Postman Collection, HAR, session JSON (re-importable), or Markdown docs; import auto-detects HAR, Postman Collection, or session JSON and restores response bodies inline (Markdown is export-only)
 - Standalone viewer — click the toolbar icon to open a full-tab viewer that imports and analyzes HAR/session files without DevTools (live capture stays in the DevTools panel)
 - Endpoint docs — auto-generate Markdown documentation

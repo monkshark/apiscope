@@ -18,6 +18,7 @@ interface InspectorState {
   resBodies: Record<string, ResBodyEntry>
   diffBaseId: string | null
   diffCompareId: string | null
+  variables: Record<string, string>
   addRequest: (req: CapturedRequest) => void
   clear: () => void
   select: (id: string | null) => void
@@ -30,6 +31,7 @@ interface InspectorState {
   setDiffBase: (id: string | null) => void
   setDiffCompare: (id: string | null) => void
   clearDiff: () => void
+  setVariables: (vars: Record<string, string>) => void
   importEntries: (
     reqs: CapturedRequest[],
     bodies: Record<string, ResBodyEntry>,
@@ -50,6 +52,7 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
   resBodies: {},
   diffBaseId: null,
   diffCompareId: null,
+  variables: {},
 
   addRequest: (req) =>
     set((state) => {
@@ -89,6 +92,7 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
   setDiffBase: (id) => set({ diffBaseId: id }),
   setDiffCompare: (id) => set({ diffCompareId: id }),
   clearDiff: () => set({ diffCompareId: null }),
+  setVariables: (vars) => set({ variables: vars }),
 
   importEntries: (reqs, bodies) => {
     clearRaw()

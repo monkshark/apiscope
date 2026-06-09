@@ -62,6 +62,11 @@ export AUTH_TOKEN="자기-토큰"
 - 필터 — 정규식(URL) · 메서드 · 상태코드 · 정적자원 숨김 · 본문 전문 검색
 - 자동 마스킹 — `Authorization` / `Cookie` / `*-token` / 쿼리 토큰을 변환·표시 시 가림
 - 변환 — cURL(멀티라인, multipart/form 지원) · HTTPie · Postman Collection. 플레이스홀더 모드를 켜면 자격증명을 `$AUTH_TOKEN` / `{{AUTH_TOKEN}}` 변수 자리로 출력 → 진짜 토큰 노출 없이도 받는 사람이 자기 값만 채우면 바로 실행 가능.
+- 편집 & 재전송 — DevTools 패널에서 캡처한 요청을 편집(메서드/URL/헤더/바디)하고 `{{변수}}` 치환 후, 보고 있는 페이지의 세션으로 그대로 재전송(추가 권한·CORS 문제 없음). 응답을 원본과 비교
+- 변수 — `{{KEY}}` 값을 한 번 정의해두고 재전송 시 재사용
+- 툴박스 — 인코더/디코더(Base64 / URL / Hex / JWT) · 해시(MD5 / SHA-1 / SHA-256) · 캡처된 모든 응답 본문에서 정규식 스캔(예: `flag{...}` 찾기)
+- 응답 검색 — 응답 본문 정규식 하이라이트
+- 퍼즈 — Intruder 방식: `§...§`로 위치 지정 + 페이로드 리스트를 페이지 세션으로 순차 재전송, 결과 표에서 길이/상태 이상치 강조 (인가된 워게임/CTF 전용)
 - diff — 두 요청 비교(status / query / 헤더 / 본문)
 - export / import 양방향 — export: Postman Collection / HAR / 세션 JSON(재import 가능) / 마크다운 문서. import: HAR · Postman Collection · 세션 JSON을 자동 인식해서 불러오고 응답 본문까지 인라인 복원 (마크다운은 export 전용)
 - 독립 뷰어 — 툴바 아이콘을 누르면 새 탭에 뷰어가 열림. DevTools 없이 HAR/세션 파일을 import해서 분석 가능 (실시간 캡처는 DevTools 패널 담당)

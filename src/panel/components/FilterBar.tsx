@@ -1,9 +1,10 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useInspectorStore } from '../store/useInspectorStore'
 import { isValidRegex } from '../../core/filter'
 import { parseImport } from '../../core/session'
 import { isDevtools } from '../env'
 import ExportMenu from './ExportMenu'
+import ToolsModal from './ToolsModal'
 
 const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 const STATUS_CLASSES = ['2xx', '3xx', '4xx', '5xx']
@@ -48,6 +49,7 @@ export default function FilterBar() {
   const prefetchBodies = useInspectorStore((s) => s.prefetchBodies)
 
   const fileRef = useRef<HTMLInputElement>(null)
+  const [showTools, setShowTools] = useState(false)
   const regexOk = isValidRegex(filter.query)
 
   const toggleIn = (list: string[], value: string): string[] =>
@@ -142,6 +144,14 @@ export default function FilterBar() {
         >
           📂 import
         </button>
+        <button
+          type="button"
+          onClick={() => setShowTools(true)}
+          title="인코더/디코더 · 해시 · 응답 스캔"
+          className="rounded bg-zinc-200 px-2 py-0.5 text-xs font-medium text-zinc-600 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
+        >
+          🛠 tools
+        </button>
         <Toggle active={maskEnabled} onClick={toggleMask} title="민감 헤더 마스킹">
           {maskEnabled ? '● mask' : '○ mask'}
         </Toggle>
@@ -159,6 +169,7 @@ export default function FilterBar() {
           🗑 clear
         </button>
       </div>
+      {showTools && <ToolsModal onClose={() => setShowTools(false)} />}
     </div>
   )
 }

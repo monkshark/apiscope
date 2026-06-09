@@ -24,3 +24,23 @@ export function getHeader(
   }
   return undefined
 }
+
+export function headersToLines(headers: Record<string, string>): string {
+  return Object.entries(headers)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n')
+}
+
+export function parseHeaderLines(text: string): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const line of text.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    const idx = trimmed.indexOf(':')
+    if (idx < 0) continue
+    const key = trimmed.slice(0, idx).trim()
+    const value = trimmed.slice(idx + 1).trim()
+    if (key) out[key] = value
+  }
+  return out
+}

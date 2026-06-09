@@ -1,18 +1,27 @@
 import { useState } from 'react'
 import type { CapturedRequest } from '../../types'
 import { useInspectorStore } from '../store/useInspectorStore'
+import { isDevtools } from '../env'
 import HeadersTab from './tabs/HeadersTab'
 import BodyTab from './tabs/BodyTab'
 import QueryTab from './tabs/QueryTab'
 import ConvertTab from './tabs/ConvertTab'
+import ResendTab from './tabs/ResendTab'
+import FuzzTab from './tabs/FuzzTab'
 
-type TabKey = 'headers' | 'body' | 'query' | 'convert'
+type TabKey = 'headers' | 'body' | 'query' | 'convert' | 'resend' | 'fuzz'
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'headers', label: 'Headers' },
   { key: 'body', label: 'Body' },
   { key: 'query', label: 'Query' },
   { key: 'convert', label: 'Convert' },
+  ...(isDevtools
+    ? [
+        { key: 'resend' as const, label: 'Edit/Send' },
+        { key: 'fuzz' as const, label: 'Fuzz' },
+      ]
+    : []),
 ]
 
 export default function DetailPanel({
@@ -60,6 +69,8 @@ export default function DetailPanel({
         {tab === 'body' && <BodyTab req={req} />}
         {tab === 'query' && <QueryTab req={req} />}
         {tab === 'convert' && <ConvertTab req={req} />}
+        {tab === 'resend' && <ResendTab req={req} />}
+        {tab === 'fuzz' && <FuzzTab req={req} />}
       </div>
     </div>
   )
