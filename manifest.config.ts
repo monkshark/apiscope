@@ -8,6 +8,12 @@ export default defineManifest({
     'Capture API requests in a DevTools panel and convert them to cURL/HTTPie/Postman. Local-only, no network interception permission.',
   minimum_chrome_version: '116',
   permissions: ['storage'],
+  icons: {
+    16: 'icons/icon-16.png',
+    32: 'icons/icon-32.png',
+    48: 'icons/icon-48.png',
+    128: 'icons/icon-128.png',
+  },
   devtools_page: 'src/devtools/devtools.html',
   background: {
     service_worker: 'src/background/sw.ts',
@@ -15,6 +21,12 @@ export default defineManifest({
   },
   action: {
     default_title: 'API Inspector — open viewer',
+    default_icon: {
+      16: 'icons/icon-16.png',
+      32: 'icons/icon-32.png',
+      48: 'icons/icon-48.png',
+      128: 'icons/icon-128.png',
+    },
   },
   web_accessible_resources: [
     {
