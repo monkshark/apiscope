@@ -43,6 +43,7 @@ export default function RequestList() {
   const select = useInspectorStore((s) => s.select)
   const maskEnabled = useInspectorStore((s) => s.maskEnabled)
   const maskKeys = useInspectorStore((s) => s.maskKeys)
+  const placeholderMode = useInspectorStore((s) => s.placeholderMode)
   const diffBaseId = useInspectorStore((s) => s.diffBaseId)
   const setDiffBase = useInspectorStore((s) => s.setDiffBase)
   const setDiffCompare = useInspectorStore((s) => s.setDiffCompare)
@@ -68,7 +69,11 @@ export default function RequestList() {
           label: 'Copy as cURL',
           onClick: () =>
             void copyText(
-              convert(menu.req, 'curl', { mask: maskEnabled, maskKeys }),
+              convert(menu.req, 'curl', {
+                mask: maskEnabled,
+                maskKeys,
+                placeholders: placeholderMode,
+              }),
             ),
         },
         { label: 'Copy URL', onClick: () => void copyText(menu.req.url) },

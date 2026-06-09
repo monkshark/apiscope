@@ -31,7 +31,7 @@ English: [README.md](./README.md)
 - DevTools 패널 — F12 안에 "API Inspector" 탭으로 통합
 - 필터 — 정규식(URL) · 메서드 · 상태코드 · 정적자원 숨김 · 본문 전문 검색
 - 자동 마스킹 — `Authorization` / `Cookie` / `*-token` / 쿼리 토큰을 변환·표시 시 가림
-- 변환 — cURL(멀티라인, multipart/form 지원) · HTTPie · Postman Collection
+- 변환 — cURL(멀티라인, multipart/form 지원) · HTTPie · Postman Collection. 플레이스홀더 모드를 켜면 자격증명을 `$AUTH_TOKEN` / `{{AUTH_TOKEN}}` 변수 자리로 출력 → 진짜 토큰 노출 없이도 받는 사람이 자기 값만 채우면 바로 실행 가능.
 - diff — 두 요청 비교(status / query / 헤더 / 본문)
 - 히스토리 — IndexedDB 영속, DevTools 재오픈 후에도 유지
 - HAR import — HAR 파일을 불러와 응답 본문까지 인라인 복원

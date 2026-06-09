@@ -31,7 +31,7 @@ Key differentiators: (1) safe sharing via automatic token masking, (2) regex and
 - DevTools panel — integrated as an "API Inspector" tab inside F12
 - Filters — regex (URL), method, status class, hide static assets, full-text body search
 - Auto masking — `Authorization` / `Cookie` / `*-token` / query tokens are hidden on display and in exports
-- Convert — cURL (multiline, multipart/form) · HTTPie · Postman Collection
+- Convert — cURL (multiline, multipart/form) · HTTPie · Postman Collection. An optional placeholder mode swaps credentials for `$AUTH_TOKEN` / `{{AUTH_TOKEN}}` variables, so a shared command stays runnable (the recipient fills in their own value) without exposing the real token.
 - Diff — compare two requests (status / query / headers / body)
 - History — IndexedDB persistence; survives reopening DevTools
 - HAR import — load HAR files with response bodies restored inline

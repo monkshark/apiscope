@@ -83,6 +83,42 @@ describe('toCurl', () => {
   })
 })
 
+describe('toCurl placeholder mode', () => {
+  const ph = { mask: true, maskKeys: DEFAULT_MASK_KEYS, placeholders: true }
+
+  it('emits $AUTH_TOKEN for Authorization and double-quotes that header', () => {
+    const out = toCurl(
+      makeRequest({ reqHeaders: { Authorization: 'Bearer realtoken' } }),
+      ph,
+    )
+    expect(out).toContain('-H "Authorization: Bearer $AUTH_TOKEN"')
+    expect(out).not.toContain('realtoken')
+  })
+
+  it('emits $COOKIE for Cookie header', () => {
+    const out = toCurl(makeRequest({ reqHeaders: { Cookie: 'sid=abc' } }), ph)
+    expect(out).toContain('-H "Cookie: $COOKIE"')
+  })
+
+  it('keeps non-sensitive headers single-quoted', () => {
+    const out = toCurl(
+      makeRequest({ reqHeaders: { 'Content-Type': 'application/json' } }),
+      ph,
+    )
+    expect(out).toContain("-H 'Content-Type: application/json'")
+  })
+
+  it('uses a placeholder for sensitive query params and double-quotes the url', () => {
+    const out = toCurl(
+      makeRequest({ url: 'https://api.example.com/x?token=secret&q=1' }),
+      ph,
+    )
+    expect(out).toContain('$TOKEN')
+    expect(out).not.toContain('secret')
+    expect(out).toContain('curl "https://api.example.com/x?')
+  })
+})
+
 describe('toHttpie', () => {
   it('builds method url and header tokens', () => {
     const out = toHttpie(

@@ -73,4 +73,22 @@ describe('toPostman', () => {
     ])
     expect(col.item[0].request.header[0].value).toBe('Bearer ***MASKED***')
   })
+
+  it('uses {{VAR}} placeholders when placeholders enabled', () => {
+    const col = parse(
+      toPostman(
+        [
+          makeRequest({
+            url: 'https://api.example.com/v1/x?token=abc',
+            reqHeaders: { Authorization: 'Bearer secrettoken' },
+          }),
+        ],
+        { mask: true, maskKeys: DEFAULT_MASK_KEYS, placeholders: true },
+      ),
+    )
+    expect(col.item[0].request.header[0].value).toBe('Bearer {{AUTH_TOKEN}}')
+    expect(col.item[0].request.url.query).toEqual([
+      { key: 'token', value: '{{TOKEN}}' },
+    ])
+  })
 })

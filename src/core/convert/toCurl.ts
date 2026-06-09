@@ -1,21 +1,31 @@
 import type { CapturedRequest } from '../../types'
-import { maskHeaders, maskUrl, maskText } from '../mask'
-import { singleQuote, type ConvertOptions } from './shell'
+import { maskHeaderValueStyled, maskUrlStyled, maskText, type MaskStyle } from '../mask'
+import { singleQuote, doubleQuoteKeepVars, type ConvertOptions } from './shell'
 
 export function toCurl(req: CapturedRequest, opts: ConvertOptions): string {
   const cont = opts.windows ? ' ^\n  ' : ' \\\n  '
-  const url = maskUrl(req.url, opts.mask)
-  const headers = maskHeaders(req.reqHeaders, {
-    enabled: opts.mask,
-    maskKeys: opts.maskKeys,
-  })
+  const style: MaskStyle = opts.placeholders ? 'placeholder-env' : 'redact'
+  const lines: string[] = []
 
-  const lines: string[] = [`curl ${singleQuote(url)}`]
+  if (!opts.mask) {
+    lines.push(`curl ${singleQuote(req.url)}`)
+  } else {
+    const { url, hasPlaceholder } = maskUrlStyled(req.url, style)
+    lines.push(`curl ${hasPlaceholder ? doubleQuoteKeepVars(url) : singleQuote(url)}`)
+  }
+
   const method = req.method.toUpperCase()
   if (method !== 'GET') lines.push(`-X ${method}`)
 
-  for (const [key, value] of Object.entries(headers)) {
-    lines.push(`-H ${singleQuote(`${key}: ${value}`)}`)
+  for (const [key, raw] of Object.entries(req.reqHeaders)) {
+    if (!opts.mask) {
+      lines.push(`-H ${singleQuote(`${key}: ${raw}`)}`)
+      continue
+    }
+    const value = maskHeaderValueStyled(key, raw, opts.maskKeys, style)
+    const seg = `${key}: ${value}`
+    const useVarQuote = opts.placeholders && value.includes('$')
+    lines.push(`-H ${useVarQuote ? doubleQuoteKeepVars(seg) : singleQuote(seg)}`)
   }
 
   const body = req.reqBody

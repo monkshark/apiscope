@@ -12,6 +12,7 @@ export default function ExportMenu() {
   const resBodies = useInspectorStore((s) => s.resBodies)
   const maskEnabled = useInspectorStore((s) => s.maskEnabled)
   const maskKeys = useInspectorStore((s) => s.maskKeys)
+  const placeholderMode = useInspectorStore((s) => s.placeholderMode)
 
   const run = (fn: () => void) => {
     fn()
@@ -26,7 +27,11 @@ export default function ExportMenu() {
       onClick: () =>
         downloadText(
           'api-inspector.postman_collection.json',
-          toPostman(filtered(), { mask: maskEnabled, maskKeys }),
+          toPostman(filtered(), {
+            mask: maskEnabled,
+            maskKeys,
+            placeholders: placeholderMode,
+          }),
           'application/json',
         ),
     },

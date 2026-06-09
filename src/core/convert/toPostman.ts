@@ -1,5 +1,11 @@
 import type { CapturedRequest } from '../../types'
-import { maskHeaders, maskUrl, maskText } from '../mask'
+import {
+  maskHeaderValueStyled,
+  maskQueryValueStyled,
+  maskUrlStyled,
+  maskText,
+  type MaskStyle,
+} from '../mask'
 import type { ConvertOptions } from './shell'
 
 interface PostmanUrl {
@@ -10,15 +16,19 @@ interface PostmanUrl {
   query?: { key: string; value: string }[]
 }
 
-function buildUrl(raw: string): PostmanUrl {
+function buildUrl(req: CapturedRequest, opts: ConvertOptions, style: MaskStyle): PostmanUrl {
+  const raw = opts.mask ? maskUrlStyled(req.url, style).url : req.url
   try {
-    const u = new URL(raw)
+    const u = new URL(req.url)
     return {
       raw,
       protocol: u.protocol.replace(':', ''),
       host: u.hostname.split('.'),
       path: u.pathname.split('/').filter(Boolean),
-      query: [...u.searchParams.entries()].map(([key, value]) => ({ key, value })),
+      query: [...u.searchParams.entries()].map(([key, value]) => ({
+        key,
+        value: opts.mask ? maskQueryValueStyled(key, value, style) : value,
+      })),
     }
   } catch {
     return { raw }
@@ -63,19 +73,20 @@ export function toPostman(
   reqs: CapturedRequest[],
   opts: ConvertOptions & { name?: string },
 ): string {
+  const style: MaskStyle = opts.placeholders ? 'placeholder-postman' : 'redact'
+
   const item = reqs.map((req) => {
-    const url = maskUrl(req.url, opts.mask)
-    const headers = maskHeaders(req.reqHeaders, {
-      enabled: opts.mask,
-      maskKeys: opts.maskKeys,
-    })
+    const header = Object.entries(req.reqHeaders).map(([key, raw]) => ({
+      key,
+      value: opts.mask ? maskHeaderValueStyled(key, raw, opts.maskKeys, style) : raw,
+    }))
     const body = buildBody(req, opts.mask)
     return {
       name: `${req.method.toUpperCase()} ${req.path}`,
       request: {
         method: req.method.toUpperCase(),
-        header: Object.entries(headers).map(([key, value]) => ({ key, value })),
-        url: buildUrl(url),
+        header,
+        url: buildUrl(req, opts, style),
         ...(body ? { body } : {}),
       },
     }

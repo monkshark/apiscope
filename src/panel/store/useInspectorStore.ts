@@ -17,6 +17,7 @@ interface InspectorState {
   selectedId: string | null
   paused: boolean
   maskEnabled: boolean
+  placeholderMode: boolean
   maskKeys: string[]
   maxEntries: number
   filter: FilterState
@@ -29,6 +30,7 @@ interface InspectorState {
   select: (id: string | null) => void
   togglePaused: () => void
   toggleMask: () => void
+  togglePlaceholderMode: () => void
   setFilter: (patch: Partial<FilterState>) => void
   setResBody: (id: string, entry: ResBodyEntry) => void
   setDiffBase: (id: string | null) => void
@@ -47,6 +49,7 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
   selectedId: null,
   paused: false,
   maskEnabled: true,
+  placeholderMode: false,
   maskKeys: DEFAULT_MASK_KEYS,
   maxEntries: 1000,
   filter: EMPTY_FILTER,
@@ -87,6 +90,8 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
   select: (id) => set({ selectedId: id }),
   togglePaused: () => set((state) => ({ paused: !state.paused })),
   toggleMask: () => set((state) => ({ maskEnabled: !state.maskEnabled })),
+  togglePlaceholderMode: () =>
+    set((state) => ({ placeholderMode: !state.placeholderMode })),
   setFilter: (patch) =>
     set((state) => ({ filter: { ...state.filter, ...patch } })),
 

@@ -135,3 +135,72 @@ export function hasSensitive(
 ): boolean {
   return Object.keys(headers).some((k) => isSensitiveHeader(k, maskKeys))
 }
+
+export type MaskStyle = 'redact' | 'placeholder-env' | 'placeholder-postman'
+
+function placeholderVarName(key: string): string {
+  const k = key.toLowerCase()
+  if (k === 'authorization') return 'AUTH_TOKEN'
+  if (k === 'cookie') return 'COOKIE'
+  if (k === 'x-api-key' || k === 'api-key') return 'API_KEY'
+  return key
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+}
+
+function wrapVar(name: string, style: MaskStyle): string {
+  return style === 'placeholder-postman' ? `{{${name}}}` : `$${name}`
+}
+
+export function maskHeaderValueStyled(
+  key: string,
+  value: string,
+  maskKeys: string[],
+  style: MaskStyle,
+): string {
+  if (!isSensitiveHeader(key, maskKeys)) return maskText(value, true)
+  if (style === 'redact') return maskValue(value)
+  const name = placeholderVarName(key)
+  const scheme = /^(bearer|basic|digest)\s+/i.exec(value)
+  return scheme ? `${scheme[1]} ${wrapVar(name, style)}` : wrapVar(name, style)
+}
+
+export function maskQueryValueStyled(
+  key: string,
+  value: string,
+  style: MaskStyle,
+): string {
+  if (!isSensitiveQueryKey(key)) return maskText(value, true)
+  if (style === 'redact') return maskValue(value)
+  return wrapVar(placeholderVarName(key), style)
+}
+
+export function maskUrlStyled(
+  url: string,
+  style: MaskStyle,
+): { url: string; hasPlaceholder: boolean } {
+  try {
+    const u = new URL(url)
+    let hasPlaceholder = false
+    for (const key of [...u.searchParams.keys()]) {
+      if (!isSensitiveQueryKey(key)) continue
+      if (style === 'redact') {
+        u.searchParams.set(key, '***MASKED***')
+      } else {
+        u.searchParams.set(key, wrapVar(placeholderVarName(key), style))
+        hasPlaceholder = true
+      }
+    }
+    let out = u.toString()
+    if (hasPlaceholder) {
+      out = out
+        .replace(/%24/g, '$')
+        .replace(/%7B%7B/gi, '{{')
+        .replace(/%7D%7D/gi, '}}')
+    }
+    return { url: maskText(out, true), hasPlaceholder }
+  } catch {
+    return { url: maskText(url, true), hasPlaceholder: false }
+  }
+}
