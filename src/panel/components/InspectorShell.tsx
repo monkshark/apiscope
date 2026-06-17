@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { useInspectorStore } from '../store/useInspectorStore'
+import { isDevtools } from '../env'
 import FilterBar from './FilterBar'
 import RequestList from './RequestList'
 import DetailPanel from './DetailPanel'
@@ -10,6 +11,25 @@ import DiffBaseBanner from './DiffBaseBanner'
 const MIN_DETAIL = 320
 const MAX_DETAIL = 960
 const DEFAULT_DETAIL = 448
+
+function AppBar() {
+  const iconUrl = chrome.runtime.getURL('icons/icon-32.png')
+  return (
+    <div className="flex h-11 shrink-0 items-center gap-2.5 border-b border-bd bg-panel px-3">
+      <img
+        src={iconUrl}
+        alt=""
+        className="h-[22px] w-[22px] shrink-0 rounded-md"
+      />
+      <div className="text-[13px] font-semibold tracking-[-0.01em]">
+        APIScope
+      </div>
+      <span className="rounded-[5px] border border-bd bg-bg px-[7px] py-0.5 text-[10px] text-mut">
+        Viewer
+      </span>
+    </div>
+  )
+}
 
 export default function InspectorShell() {
   const selectedId = useInspectorStore((s) => s.selectedId)
@@ -53,6 +73,7 @@ export default function InspectorShell() {
 
   return (
     <div className="flex h-full w-full flex-col bg-bg text-tx">
+      {!isDevtools && <AppBar />}
       <FilterBar />
       <DiffBaseBanner />
       <div className="flex min-h-0 flex-1">

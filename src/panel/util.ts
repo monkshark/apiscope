@@ -39,3 +39,20 @@ export function prettyJson(raw: string): string {
     return raw
   }
 }
+
+export function methodColorVar(method: string): string {
+  const m = method.toUpperCase()
+  if (m === 'GET') return 'var(--mget)'
+  if (m === 'POST') return 'var(--mpost)'
+  if (m === 'PUT' || m === 'PATCH') return 'var(--mput)'
+  if (m === 'DELETE') return 'var(--mdel)'
+  return 'var(--mut)'
+}
+
+export function hostOf(origin: string): string {
+  try {
+    return new URL(origin).host
+  } catch {
+    return origin
+  }
+}

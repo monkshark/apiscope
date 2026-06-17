@@ -2,6 +2,9 @@ import { useState } from 'react'
 import type { CapturedRequest } from '../../types'
 import { useInspectorStore } from '../store/useInspectorStore'
 import { isDevtools } from '../env'
+import { statusClass } from '../../core/filter'
+import { statusLabel } from '../../core/status'
+import { methodColorVar, hostOf } from '../util'
 import HeadersTab from './tabs/HeadersTab'
 import BodyTab from './tabs/BodyTab'
 import QueryTab from './tabs/QueryTab'
@@ -9,6 +12,15 @@ import ConvertTab from './tabs/ConvertTab'
 import ResendTab from './tabs/ResendTab'
 import FuzzTab from './tabs/FuzzTab'
 import TamperTab from './tabs/TamperTab'
+
+function statusColor(status: number): string {
+  const cls = statusClass(status)
+  if (cls === '2xx') return 'text-grn'
+  if (cls === '3xx') return 'text-sky'
+  if (cls === '4xx') return 'text-amb'
+  if (cls === '5xx') return 'text-red'
+  return 'text-mut'
+}
 
 type TabKey =
   | 'headers'
@@ -72,6 +84,31 @@ export default function DetailPanel({
         >
           ✕
         </button>
+      </div>
+      <div className="flex shrink-0 items-center gap-[9px] overflow-hidden border-b border-bd bg-panel px-3.5 py-[7px] text-[11px]">
+        <span
+          className="shrink-0 rounded font-medium"
+          style={{
+            color: methodColorVar(req.method),
+            fontSize: '9.5px',
+            padding: '2px 6px',
+          }}
+        >
+          {req.method}
+        </span>
+        <span
+          className={
+            'flex shrink-0 items-center gap-1.5 whitespace-nowrap font-medium ' +
+            statusColor(req.status)
+          }
+        >
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
+          {req.status ? statusLabel(req.status, req.statusText) : 'pending'}
+        </span>
+        <span className="min-w-0 truncate" title={req.url}>
+          <span className="text-mut">{hostOf(req.origin)}</span>
+          <span className="text-tx">{req.path}</span>
+        </span>
       </div>
       <div className="min-h-0 flex-1 overflow-auto">
         {tab === 'headers' && <HeadersTab req={req} />}

@@ -1,7 +1,7 @@
 import type { CapturedRequest } from '../../types'
 import { statusClass } from '../../core/filter'
-import { statusLabel } from '../../core/status'
-import { formatBytes, formatDuration } from '../util'
+import { statusLabel, statusPhrase } from '../../core/status'
+import { formatBytes, formatDuration, methodColorVar } from '../util'
 
 function statusColor(status: number): string {
   const cls = statusClass(status)
@@ -24,6 +24,7 @@ export default function RequestRow({
   onContextMenu: (e: React.MouseEvent) => void
 }) {
   const highlight = req.status === 401 || req.status === 403
+  const reason = req.status ? statusPhrase(req.status, req.statusText) : ''
 
   return (
     <div
@@ -43,17 +44,23 @@ export default function RequestRow({
         (selected ? '' : 'hover:bg-[var(--hov)]')
       }
     >
-      <span className={'font-bold ' + (selected ? 'text-tx' : 'text-mut')}>
+      <span
+        className="rounded text-center text-[9.5px] font-medium"
+        style={{ color: methodColorVar(req.method), padding: '2px 0' }}
+      >
         {req.method}
       </span>
       <span className="truncate text-tx" title={req.url}>
         {req.path}
       </span>
       <span
-        className={'truncate ' + statusColor(req.status)}
+        className="flex gap-1.5 overflow-hidden"
         title={statusLabel(req.status, req.statusText)}
       >
-        {req.status ? statusLabel(req.status, req.statusText) : '—'}
+        <span className={statusColor(req.status)}>
+          {req.status ? req.status : '—'}
+        </span>
+        {reason && <span className="truncate text-mut">{reason}</span>}
       </span>
       <span className="truncate text-right text-mut">{req.type}</span>
       <span className="text-right text-mut">{formatDuration(req.durationMs)}</span>

@@ -2,7 +2,8 @@ import type { CapturedRequest, ResBodyEntry } from '../types'
 import { parseHar, type ParsedHar } from './har'
 import { isPostmanCollection, parsePostman } from './postman'
 
-export const SESSION_FORMAT = 'api-inspector'
+export const SESSION_FORMAT = 'apiscope'
+const LEGACY_SESSION_FORMAT = 'api-inspector'
 
 export interface SessionBundle {
   format: string
@@ -27,7 +28,10 @@ export function buildSession(
 function isSessionBundle(data: unknown): data is SessionBundle {
   if (!data || typeof data !== 'object') return false
   const d = data as Record<string, unknown>
-  return d.format === SESSION_FORMAT && Array.isArray(d.requests)
+  return (
+    (d.format === SESSION_FORMAT || d.format === LEGACY_SESSION_FORMAT) &&
+    Array.isArray(d.requests)
+  )
 }
 
 export function parseImport(jsonText: string, now: number): ParsedHar {

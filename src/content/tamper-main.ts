@@ -5,8 +5,8 @@ let rules: TamperRule[] = []
 
 window.addEventListener('message', (e) => {
   if (e.source !== window) return
-  const data = e.data as { __apiInspectorTamper?: string; rules?: TamperRule[] }
-  if (data && data.__apiInspectorTamper === 'rules') {
+  const data = e.data as { __apiScopeTamper?: string; rules?: TamperRule[] }
+  if (data && data.__apiScopeTamper === 'rules') {
     rules = Array.isArray(data.rules) ? data.rules : []
   }
 })
@@ -121,4 +121,4 @@ class TamperingXHR extends OriginalXHR {
 
 window.XMLHttpRequest = TamperingXHR as unknown as typeof XMLHttpRequest
 
-window.postMessage({ __apiInspectorTamper: 'ready' }, '*')
+window.postMessage({ __apiScopeTamper: 'ready' }, '*')

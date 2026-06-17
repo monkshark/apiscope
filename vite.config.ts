@@ -13,6 +13,7 @@ export default defineConfig({
         panel: resolve(__dirname, 'src/panel/index.html'),
         viewer: resolve(__dirname, 'src/viewer/index.html'),
         intercept: resolve(__dirname, 'src/intercept/index.html'),
+        sidepanel: resolve(__dirname, 'src/sidepanel/index.html'),
       },
     },
   },

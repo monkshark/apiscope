@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useInspectorStore } from '../store/useInspectorStore'
 import { applyFilter } from '../../core/filter'
+import { parseImport } from '../../core/session'
 import { convert } from '../../core/convert'
 import { maskText } from '../../core/mask'
 import { shareOptions } from '../share'
@@ -18,17 +19,98 @@ interface MenuState {
   req: CapturedRequest
 }
 
+function Dropzone() {
+  const importEntries = useInspectorStore((s) => s.importEntries)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [over, setOver] = useState(false)
+
+  const ingest = async (file: File | undefined) => {
+    if (!file) return
+    try {
+      const { requests, resBodies } = parseImport(await file.text(), Date.now())
+      importEntries(requests, resBodies)
+    } catch (err) {
+      window.alert(`Import failed: ${(err as Error).message}`)
+    }
+  }
+
+  return (
+    <div
+      className="flex h-full items-center justify-center p-6"
+      onDragOver={(e) => {
+        e.preventDefault()
+        setOver(true)
+      }}
+      onDragLeave={() => setOver(false)}
+      onDrop={(e) => {
+        e.preventDefault()
+        setOver(false)
+        void ingest(e.dataTransfer.files?.[0])
+      }}
+    >
+      <div
+        className={
+          'flex w-[420px] max-w-full flex-col items-center rounded-xl border-[1.5px] border-dashed px-8 py-10 text-center ' +
+          (over ? 'border-acc bg-[var(--sel)]' : 'border-bd bg-panel')
+        }
+      >
+        <div className="mb-[18px] flex h-[52px] w-[52px] items-center justify-center rounded-xl border border-bd bg-bg">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M3 7.5h6l1.8 2.1H21V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19V7.5z"
+              stroke="var(--acc)"
+              strokeWidth="1.4"
+            />
+            <path
+              d="M12 16.5V10.5M12 10.5l-2.4 2.4M12 10.5l2.4 2.4"
+              stroke="var(--acc)"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+        <div className="mb-[7px] text-[15px] font-semibold text-tx">
+          Drop a .har or session .json here
+        </div>
+        <div className="mb-[22px] max-w-[320px] text-[12px] leading-relaxed text-mut">
+          or click below — analysis is fully local, nothing leaves your browser
+        </div>
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="flex h-8 items-center gap-[7px] rounded-md bg-acc px-4 text-[12.5px] font-medium text-white"
+        >
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M2 4.2h4l1.2 1.4H14v7.4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4.2z"
+              stroke="#fff"
+              strokeWidth="1.3"
+            />
+          </svg>
+          Choose file
+        </button>
+        <div className="mt-[18px] text-[10px] text-mut">
+          .har · .json — max 5000 entries
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".har,.json,application/json"
+          className="hidden"
+          onChange={(e) => {
+            void ingest(e.target.files?.[0])
+            e.target.value = ''
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
 function EmptyState() {
   if (!isDevtools) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
-        <p className="text-[11px] text-tx">No requests to show.</p>
-        <p className="max-w-xs text-[10.5px] leading-relaxed text-mut">
-          Use 📂 import above to open a HAR or session JSON, or requests captured
-          with the DevTools panel will appear here.
-        </p>
-      </div>
-    )
+    return <Dropzone />
   }
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2.5 p-6 text-center">

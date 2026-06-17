@@ -2,13 +2,27 @@ import { defineManifest } from '@crxjs/vite-plugin'
 
 export default defineManifest({
   manifest_version: 3,
-  name: 'API Inspector',
-  version: '1.1.0',
+  name: 'APIScope',
+  version: '1.2.0',
   description:
     'Capture API requests in a DevTools panel, convert them to cURL/HTTPie/Postman, replay/fuzz, and rewrite API responses with rules.',
   minimum_chrome_version: '116',
-  permissions: ['storage', 'tabs', 'debugger'],
+  permissions: [
+    'storage',
+    'tabs',
+    'debugger',
+    'sidePanel',
+    'contextMenus',
+    'scripting',
+    'alarms',
+  ],
   host_permissions: ['<all_urls>'],
+  commands: {
+    'decode-selection': {
+      suggested_key: { default: 'Alt+Shift+D' },
+      description: 'Decode the selected text in the side panel',
+    },
+  },
   icons: {
     16: 'icons/icon-16.png',
     32: 'icons/icon-32.png',
@@ -16,6 +30,9 @@ export default defineManifest({
     128: 'icons/icon-128.png',
   },
   devtools_page: 'src/devtools/devtools.html',
+  side_panel: {
+    default_path: 'src/sidepanel/index.html',
+  },
   content_scripts: [
     {
       matches: ['<all_urls>'],
@@ -36,7 +53,7 @@ export default defineManifest({
     type: 'module',
   },
   action: {
-    default_title: 'API Inspector',
+    default_title: 'APIScope',
     default_popup: 'src/popup/index.html',
     default_icon: {
       16: 'icons/icon-16.png',

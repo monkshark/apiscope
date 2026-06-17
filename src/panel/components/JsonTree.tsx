@@ -8,7 +8,12 @@ function Node({ name, value, depth }: { name?: string; value: unknown; depth: nu
   if (!isObject) {
     return (
       <div style={{ paddingLeft: depth * 12 }} className="font-mono text-[11.5px] leading-5">
-        {name !== undefined && <span className="text-jkey">{name}: </span>}
+        {name !== undefined && (
+          <span>
+            <span className="text-jkey">{name}</span>
+            <span className="text-jpun">: </span>
+          </span>
+        )}
         <ValueLeaf value={value} />
       </div>
     )
@@ -27,8 +32,8 @@ function Node({ name, value, depth }: { name?: string; value: unknown; depth: nu
       >
         <span className="inline-block w-3">{open ? '▾' : '▸'}</span>
         {name !== undefined && <span className="text-jkey">{name}</span>}
+        <span className="text-jpun">{name !== undefined ? ': ' : ''}</span>
         <span className="text-mut">
-          {name !== undefined ? ': ' : ''}
           {isArray ? `[${entries.length}]` : `{${entries.length}}`}
         </span>
       </button>

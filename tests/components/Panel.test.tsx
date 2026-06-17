@@ -66,10 +66,14 @@ describe('panel masking', () => {
       ),
     )
     fireEvent.click(screen.getByText('/v1/login'))
-    expect(screen.getByText('Bearer ***MASKED***')).toBeInTheDocument()
+    expect(screen.getByText('masked')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Bearer supersecrettoken123'),
+    ).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByTitle('Mask sensitive headers'))
     expect(screen.getByText('Bearer supersecrettoken123')).toBeInTheDocument()
+    expect(screen.queryByText('masked')).not.toBeInTheDocument()
   })
 })
 

@@ -4,15 +4,15 @@ let current: TamperRule[] = []
 
 function push(): void {
   window.postMessage(
-    { __apiInspectorTamper: 'rules', rules: current.filter((r) => r.enabled) },
+    { __apiScopeTamper: 'rules', rules: current.filter((r) => r.enabled) },
     '*',
   )
 }
 
 window.addEventListener('message', (e) => {
   if (e.source !== window) return
-  const data = e.data as { __apiInspectorTamper?: string }
-  if (data && data.__apiInspectorTamper === 'ready') push()
+  const data = e.data as { __apiScopeTamper?: string }
+  if (data && data.__apiScopeTamper === 'ready') push()
 })
 
 chrome.storage.local.get(TAMPER_STORAGE_KEY).then((stored) => {

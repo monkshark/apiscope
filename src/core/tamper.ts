@@ -10,7 +10,7 @@ export interface TamperRule {
   body: string
 }
 
-export const TAMPER_STORAGE_KEY = 'apiInspectorTamperRules'
+export const TAMPER_STORAGE_KEY = 'apiScopeTamperRules'
 
 export function ruleMatches(
   rule: TamperRule,

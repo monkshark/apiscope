@@ -27,19 +27,19 @@ jobs:
 
       - name: Package
         run: |
-          cp -r dist api-inspector
-          zip -r "api-inspector-${GITHUB_REF_NAME}.zip" api-inspector
+          cp -r dist apiscope
+          zip -r "apiscope-${GITHUB_REF_NAME}.zip" apiscope
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: api-inspector-*.zip
+          files: apiscope-*.zip
           generate_release_notes: true
           body: |
             Unpacked Chrome extension build.
 
             Install:
-            1. Download `api-inspector-${{ github.ref_name }}.zip` below and unzip it.
+            1. Download `apiscope-${{ github.ref_name }}.zip` below and unzip it.
             2. Open `chrome://extensions`, enable Developer mode.
-            3. Click "Load unpacked" and select the unzipped `api-inspector` folder.
-            4. Open F12 on any page and switch to the "API Inspector" tab.
+            3. Click "Load unpacked" and select the unzipped `apiscope` folder.
+            4. Open F12 on any page and switch to the "APIScope" tab.

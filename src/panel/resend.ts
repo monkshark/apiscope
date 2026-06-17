@@ -14,13 +14,13 @@ export interface ResendInput {
   body?: string
 }
 
-const RESULT_KEY = '__apiInspectorResend'
+const RESULT_KEY = '__apiScopeResend'
 const TIMEOUT_MS = 20000
 const POLL_MS = 150
 
-const FUZZ_ARR_KEY = '__apiInspectorFuzz'
-const FUZZ_DONE_KEY = '__apiInspectorFuzzDone'
-const FUZZ_STOP_KEY = '__apiInspectorFuzzStop'
+const FUZZ_ARR_KEY = '__apiScopeFuzz'
+const FUZZ_DONE_KEY = '__apiScopeFuzzDone'
+const FUZZ_STOP_KEY = '__apiScopeFuzzStop'
 const FUZZ_STALL_MS = 30000
 const FETCH_TIMEOUT_MS = 20000
 const DRAIN = 25

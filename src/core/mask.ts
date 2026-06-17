@@ -39,6 +39,29 @@ export function maskValue(value: string): string {
   return `${value.slice(0, 4)}…***MASKED***`
 }
 
+export function isCookieHeader(name: string): boolean {
+  const n = name.toLowerCase()
+  return n === 'cookie' || n === 'set-cookie'
+}
+
+export interface CookiePart {
+  name: string
+  value: string
+  hasValue: boolean
+}
+
+export function parseCookieParts(value: string): CookiePart[] {
+  return value
+    .split(';')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((t) => {
+      const eq = t.indexOf('=')
+      if (eq === -1) return { name: t, value: '', hasValue: false }
+      return { name: t.slice(0, eq), value: t.slice(eq + 1), hasValue: true }
+    })
+}
+
 export function isSensitiveQueryKey(key: string): boolean {
   return SENSITIVE_QUERY_KEYS.has(key.toLowerCase())
 }

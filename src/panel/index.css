@@ -15,6 +15,11 @@
   --color-jstr: var(--jstr);
   --color-jnum: var(--jnum);
   --color-jlit: var(--jlit);
+  --color-jpun: var(--jpun);
+  --color-mget: var(--mget);
+  --color-mpost: var(--mpost);
+  --color-mput: var(--mput);
+  --color-mdel: var(--mdel);
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
 }
 
@@ -30,10 +35,15 @@
   --sky: #0969da;
   --amb: #9a6700;
   --red: #cf222e;
-  --jkey: #0550ae;
-  --jstr: #0a3069;
-  --jnum: #953800;
-  --jlit: #6639ba;
+  --jkey: #871094;
+  --jstr: #067d17;
+  --jnum: #1750eb;
+  --jlit: #0033b3;
+  --jpun: #080808;
+  --mget: #3d6a99;
+  --mpost: #3f7a54;
+  --mput: #876a33;
+  --mdel: #9c5249;
   --ambg: rgba(154, 103, 0, 0.1);
   --sel: rgba(79, 70, 229, 0.09);
   --hov: rgba(101, 109, 118, 0.06);
@@ -54,10 +64,15 @@
     --sky: #79c0ff;
     --amb: #d29922;
     --red: #f85149;
-    --jkey: #79c0ff;
-    --jstr: #7ee787;
-    --jnum: #f0b72f;
-    --jlit: #d2a8ff;
+    --jkey: #9876aa;
+    --jstr: #6a8759;
+    --jnum: #6897bb;
+    --jlit: #cc7832;
+    --jpun: #a9b7c6;
+    --mget: #7e9cc4;
+    --mpost: #69a17c;
+    --mput: #bd9a5d;
+    --mdel: #cf8079;
     --ambg: rgba(210, 153, 34, 0.13);
     --sel: rgba(99, 102, 241, 0.16);
     --hov: rgba(139, 148, 158, 0.08);

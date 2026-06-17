@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useInspectorStore } from '../store/useInspectorStore'
-import { applyFilter } from '../../core/filter'
 import { toPostman } from '../../core/convert/toPostman'
 import { toMarkdown } from '../../core/export/toMarkdown'
 import { buildSession } from '../../core/session'
@@ -11,7 +10,6 @@ import { downloadText } from '../download'
 export default function ExportMenu() {
   const [open, setOpen] = useState(false)
   const requests = useInspectorStore((s) => s.requests)
-  const filter = useInspectorStore((s) => s.filter)
   const resBodies = useInspectorStore((s) => s.resBodies)
   const maskKeys = useInspectorStore((s) => s.maskKeys)
   const safeShare = useInspectorStore((s) => s.safeShare)
@@ -22,7 +20,7 @@ export default function ExportMenu() {
     setOpen(false)
   }
 
-  const filtered = () => applyFilter(requests, filter, resBodies)
+  const all = () => requests
   const bodiesFor = (reqs: { id: string }[]) => {
     const ids = new Set(reqs.map((r) => r.id))
     return Object.fromEntries(
@@ -35,35 +33,42 @@ export default function ExportMenu() {
       label: 'Postman Collection (.json)',
       onClick: () =>
         downloadText(
-          'api-inspector.postman_collection.json',
-          toPostman(filtered(), shareOptions(safeShare, maskKeys)),
+          'apiscope.postman_collection.json',
+          toPostman(all(), shareOptions(safeShare, maskKeys)),
           'application/json',
         ),
     },
     {
       label: 'HAR (.har)',
       onClick: () => {
-        const reqs = filtered()
-        downloadText('api-inspector.har', buildHar(reqs, bodiesFor(reqs)), 'application/json')
+        const reqs = all()
+        downloadText(
+          'apiscope.har',
+          buildHar(reqs, bodiesFor(reqs), shareOptions(safeShare, maskKeys)),
+          'application/json',
+        )
       },
     },
     {
       label: 'Endpoint docs (.md)',
       onClick: () =>
-        downloadText('api-endpoints.md', toMarkdown(filtered()), 'text/markdown'),
+        downloadText('api-endpoints.md', toMarkdown(all()), 'text/markdown'),
     },
     {
       label: 'Session (.json, re-importable)',
+      rawOnly: true,
       onClick: () => {
-        const reqs = filtered()
+        const reqs = all()
         downloadText(
-          'api-inspector-session.json',
+          'apiscope-session.json',
           buildSession(reqs, bodiesFor(reqs)),
           'application/json',
         )
       },
     },
   ]
+
+  const visible = items.filter((item) => !(item.rawOnly && safeShare))
 
   return (
     <div className="relative">
@@ -109,7 +114,7 @@ export default function ExportMenu() {
               </div>
             </div>
             <div className="flex flex-col p-1">
-              {items.map((item) => (
+              {visible.map((item) => (
                 <button
                   key={item.label}
                   type="button"

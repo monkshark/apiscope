@@ -60,4 +60,29 @@ describe('HAR export -> import round-trip', () => {
     const out = parseImport(har, 0)
     expect(out.requests).toHaveLength(1)
   })
+
+  it('redacts sensitive data when exported in safe mode', () => {
+    const reqs = [
+      makeRequest({
+        id: 'z',
+        method: 'POST',
+        url: 'https://api.example.com/v1/login?token=abc123',
+        reqHeaders: {
+          Authorization: 'Bearer supersecrettoken123',
+          'Content-Type': 'application/json',
+        },
+        reqBody: { kind: 'json', raw: '{"card":"4242424242424242"}' },
+      }),
+    ]
+    const safe = { mask: true, maskKeys: DEFAULT_MASK_KEYS, placeholders: true }
+    const har = buildHar(reqs, {}, safe)
+    expect(har).not.toContain('supersecrettoken123')
+    expect(har).not.toContain('4242424242424242')
+    expect(har).toContain('***MASKED***')
+    expect(har).toContain('Bearer ***MASKED***')
+    expect(har).toContain('application/json')
+
+    const raw = buildHar(reqs, {})
+    expect(raw).toContain('supersecrettoken123')
+  })
 })

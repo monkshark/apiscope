@@ -6,9 +6,37 @@ import {
   maskText,
   maskDeep,
   isSensitiveHeader,
+  isCookieHeader,
+  parseCookieParts,
   hasSensitive,
   DEFAULT_MASK_KEYS,
 } from '../src/core/mask'
+
+describe('parseCookieParts', () => {
+  it('splits pairs and keeps names and values', () => {
+    expect(parseCookieParts('ajs_anonymous_id=abc123; sessionid=xyz')).toEqual([
+      { name: 'ajs_anonymous_id', value: 'abc123', hasValue: true },
+      { name: 'sessionid', value: 'xyz', hasValue: true },
+    ])
+  })
+  it('keeps the full value when it contains "="', () => {
+    expect(parseCookieParts('token=a=b==')).toEqual([
+      { name: 'token', value: 'a=b==', hasValue: true },
+    ])
+  })
+  it('marks valueless attributes', () => {
+    expect(parseCookieParts('id=abc; HttpOnly; Secure')).toEqual([
+      { name: 'id', value: 'abc', hasValue: true },
+      { name: 'HttpOnly', value: '', hasValue: false },
+      { name: 'Secure', value: '', hasValue: false },
+    ])
+  })
+  it('detects cookie headers case-insensitively', () => {
+    expect(isCookieHeader('Cookie')).toBe(true)
+    expect(isCookieHeader('set-cookie')).toBe(true)
+    expect(isCookieHeader('authorization')).toBe(false)
+  })
+})
 
 describe('isSensitiveHeader', () => {
   it('matches default keys case-insensitively', () => {

@@ -1,6 +1,6 @@
-![API Inspector — capture, mask, convert, replay, and intercept API calls in a DevTools panel](assets/banner.svg)
+![APIScope — capture, mask, convert, replay, and intercept API calls in a DevTools panel](assets/banner.svg)
 
-# API Inspector
+# APIScope
 
 A Chromium (Manifest V3) DevTools panel extension that captures a page's API calls and turns them into something you can search, mask, convert, and replay. It reads traffic through the official DevTools API — no network interception, no host permissions — so the only permission it asks for is `storage`. Think of it as the Network tab's "Copy as cURL", supercharged with search, masking, conversion, diffing, and export.
 
@@ -9,7 +9,7 @@ Korean: [README.ko.md](README.ko.md)
 ## What it does
 
 Capture and browse:
-- DevTools panel — integrated as an "API Inspector" tab inside F12
+- DevTools panel — integrated as an "APIScope" tab inside F12
 - Captures XHR / fetch as the page makes them, in a virtualized request list
 - Filters — regex (URL), method, status class, hide static assets, full-text body search
 - JSON tree view — collapsible tree for request / response bodies
@@ -58,7 +58,7 @@ src/
 
 ## Security and privacy
 
-The whole point of the masking feature is safe sharing. The DevTools "Copy as cURL" copies your `Authorization: Bearer ...` token verbatim — paste that into Slack and you have leaked a credential. API Inspector is built to prevent exactly that.
+The whole point of the masking feature is safe sharing. The DevTools "Copy as cURL" copies your `Authorization: Bearer ...` token verbatim — paste that into Slack and you have leaked a credential. APIScope is built to prevent exactly that.
 
 - Fully local — nothing ever leaves the browser. No backend, no analytics, no third-party requests.
 - Automatic secret masking — sensitive headers and query params are masked both in the UI and in every export.

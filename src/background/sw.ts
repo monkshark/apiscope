@@ -6,6 +6,11 @@ import type {
   UiToBg,
 } from '../core/intercept-types'
 import { encodeUtf8ToBase64, decodeBase64ToUtf8 } from '../core/b64'
+import {
+  fetchLatestRelease,
+  computeUpdate,
+  UPDATE_STORAGE_KEY,
+} from '../core/update'
 
 interface RequestPausedParams {
   requestId: string
@@ -27,6 +32,83 @@ interface Pending {
   respHeaders: HeaderEntry[]
   bodyBase64: string
 }
+
+const DECODE_MENU_ID = 'apiscope-decode'
+const DECODE_PENDING_KEY = 'decode:pending'
+const UPDATE_ALARM = 'check-update'
+const UPDATE_PERIOD_MINUTES = 1440
+
+async function runUpdateCheck(): Promise<void> {
+  try {
+    const latest = await fetchLatestRelease()
+    const info = computeUpdate(
+      chrome.runtime.getManifest().version,
+      latest,
+      Date.now(),
+    )
+    if (info) await chrome.storage.local.set({ [UPDATE_STORAGE_KEY]: info })
+  } catch {
+    void 0
+  }
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({
+      id: DECODE_MENU_ID,
+      title: 'Decode selection',
+      contexts: ['selection'],
+    })
+  })
+  chrome.alarms.create(UPDATE_ALARM, { periodInMinutes: UPDATE_PERIOD_MINUTES })
+  void runUpdateCheck()
+})
+
+chrome.runtime.onStartup.addListener(() => {
+  void runUpdateCheck()
+})
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === UPDATE_ALARM) void runUpdateCheck()
+})
+
+function storePending(text: string): void {
+  void chrome.storage.session.set({
+    [DECODE_PENDING_KEY]: { text, nonce: Date.now() },
+  })
+}
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId !== DECODE_MENU_ID || tab?.id == null) return
+  void chrome.sidePanel.open({ tabId: tab.id })
+  storePending(info.selectionText ?? '')
+})
+
+chrome.commands.onCommand.addListener((command) => {
+  if (command !== 'decode-selection') return
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tab = tabs[0]
+    if (tab?.id == null) return
+    void chrome.sidePanel.open({ tabId: tab.id })
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: tab.id, allFrames: true },
+        func: () => window.getSelection()?.toString() ?? '',
+      },
+      (results) => {
+        if (chrome.runtime.lastError) {
+          storePending('')
+          return
+        }
+        const text =
+          results
+            ?.map((r) => (typeof r.result === 'string' ? r.result : ''))
+            .find((t) => t.trim().length > 0) ?? ''
+        storePending(text)
+      },
+    )
+  })
+})
 
 let port: chrome.runtime.Port | null = null
 let attachedTab: number | null = null

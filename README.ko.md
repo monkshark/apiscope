@@ -1,6 +1,6 @@
-![API Inspector — DevTools 패널에서 API 호출을 캡처·마스킹·변환·재전송·가로채기](assets/banner.svg)
+![APIScope — DevTools 패널에서 API 호출을 캡처·마스킹·변환·재전송·가로채기](assets/banner.svg)
 
-# API Inspector
+# APIScope
 
 페이지가 호출하는 API를 잡아 검색·마스킹·변환·재현할 수 있게 바꿔 주는 Chromium(Manifest V3) DevTools 패널 확장입니다. 공식 DevTools API로만 트래픽을 읽기 때문에 네트워크 가로채기도, host 권한도 없으며 요청하는 권한은 `storage` 하나뿐입니다. Network 탭의 "Copy as cURL"에 검색·마스킹·변환·diff·export를 더한 도구라고 보면 됩니다.
 
@@ -9,7 +9,7 @@
 ## 기능
 
 수집과 탐색:
-- DevTools 패널 — F12 안에 "API Inspector" 탭으로 통합
+- DevTools 패널 — F12 안에 "APIScope" 탭으로 통합
 - 페이지가 보내는 XHR / fetch를 실시간 수집해 가상 스크롤 목록으로 표시
 - 필터 — 정규식(URL) · 메서드 · 상태코드 · 정적자원 숨김 · 본문 전문 검색
 - JSON 트리뷰 — 요청 / 응답 본문을 접이식 트리로
@@ -58,7 +58,7 @@ src/
 
 ## 보안과 개인정보
 
-마스킹 기능의 핵심 목적은 안전한 공유입니다. DevTools의 "Copy as cURL"은 `Authorization: Bearer ...` 토큰을 그대로 복사합니다 — 그걸 슬랙에 붙이는 순간 자격증명이 유출됩니다. API Inspector는 바로 그걸 막기 위해 만들어졌습니다.
+마스킹 기능의 핵심 목적은 안전한 공유입니다. DevTools의 "Copy as cURL"은 `Authorization: Bearer ...` 토큰을 그대로 복사합니다 — 그걸 슬랙에 붙이는 순간 자격증명이 유출됩니다. APIScope는 바로 그걸 막기 위해 만들어졌습니다.
 
 - 완전 로컬 — 어떤 데이터도 브라우저를 벗어나지 않습니다. 서버·분석·외부 요청 없음.
 - 자동 자격증명 마스킹 — 민감 헤더와 쿼리 파라미터를 화면과 모든 export에서 가립니다.
