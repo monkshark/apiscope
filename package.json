@@ -1,6 +1,6 @@
 {
   "name": "apiscope",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "DevTools panel extension that captures API requests and converts them to cURL/HTTPie/Postman.",
   "license": "MIT",
   "author": "Huido Choo",

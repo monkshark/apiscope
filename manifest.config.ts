@@ -3,7 +3,7 @@ import { defineManifest } from '@crxjs/vite-plugin'
 export default defineManifest({
   manifest_version: 3,
   name: 'APIScope',
-  version: '1.2.0',
+  version: '1.2.1',
   description:
     'Capture API requests in a DevTools panel, convert them to cURL/HTTPie/Postman, replay/fuzz, and rewrite API responses with rules.',
   minimum_chrome_version: '116',

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { CapturedRequest } from '../../../types'
 import { useInspectorStore } from '../../store/useInspectorStore'
 import { useResponseBody } from '../../hooks/useResponseBody'
@@ -101,6 +101,30 @@ function ResponseBodyView({ req, mask }: { req: CapturedRequest; mask: boolean }
   const [view, setView] = useState<'raw' | 'tree'>('raw')
   const [search, setSearch] = useState('')
 
+  const computed = useMemo(() => {
+    if (!entry || entry.state === 'idle' || entry.state === 'loading' || entry.state === 'error' || entry.state === 'binary') {
+      return null
+    }
+    const isJson = (req.resMime ?? '').includes('json')
+    const text = entry.body ?? ''
+    let parsed: unknown
+    let treeOk = false
+    if (isJson) {
+      try {
+        parsed = maskDeep(JSON.parse(text), mask)
+        treeOk = parsed !== null && typeof parsed === 'object'
+      } catch {
+        treeOk = false
+      }
+    }
+    const display = treeOk
+      ? JSON.stringify(parsed, null, 2)
+      : isJson
+        ? maskText(prettyJson(text), mask)
+        : maskText(text, mask)
+    return { parsed, treeOk, display }
+  }, [entry, mask, req.resMime])
+
   if (!entry || entry.state === 'idle' || entry.state === 'loading') {
     return <p className="text-[11.5px] text-mut">Loading…</p>
   }
@@ -111,23 +135,7 @@ function ResponseBodyView({ req, mask }: { req: CapturedRequest; mask: boolean }
     return <p className="text-[11.5px] text-mut">[binary response — preview omitted]</p>
   }
 
-  const isJson = (req.resMime ?? '').includes('json')
-  const text = entry.body ?? ''
-  let parsed: unknown
-  let treeOk = false
-  if (isJson) {
-    try {
-      parsed = maskDeep(JSON.parse(text), mask)
-      treeOk = parsed !== null && typeof parsed === 'object'
-    } catch {
-      treeOk = false
-    }
-  }
-  const display = treeOk
-    ? JSON.stringify(parsed, null, 2)
-    : isJson
-      ? maskText(prettyJson(text), mask)
-      : maskText(text, mask)
+  const { parsed, treeOk, display } = computed!
 
   return (
     <div>
